@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  api:
+    image: seyes-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn app.main:app --host 0.0.0.0 --reload --port 80
+    volumes:
+      - .:/code/
+    env_file:
+      - .env
+    ports:
+      - 80:80
+    networks:
+      - network_api
+
+networks:
+  network_api:
