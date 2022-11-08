@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import requests
 import json
 from pprintpp import pprint
@@ -7,35 +6,46 @@ from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings
 
 
-def create_connection_data(hostname, username, password, port=5665):
-    disable_warnings(InsecureRequestWarning)
-    request_url = f"https://{hostname}:{port}/v1/objects/services"
-    headers = {
-        'Accept': 'application/json',
-        'X-HTTP-Method-Override': 'GET'
+class Icinga:
+    def __init__(self, username, password, hostname, port=5665):
+        self.username = username
+        self.password = password
+        self.hostname = hostname
+        self.port = port
+
+    def create_connection_data(self):
+        disable_warnings(InsecureRequestWarning)
+        request_url = f"https://{self.hostname}:{self.port}/v1/objects/hosts"
+        headers = {
+            'Accept': 'application/json',
+            'X-HTTP-Method-Override': 'GET'
         }
-    auth = (username, password)
-    data = json.dumps({
-        "attrs": ["name", "state"],
-    })
-    r = requests.get(request_url,
-                     headers=headers,
-                     auth=auth,
-                     data=data,
-                     verify=False)
-    return r
+        auth = (self.username, self.password)
+        data = json.dumps({
+            "attrs": ["name", "state"],
+        })
+
+        r = requests.get(request_url,
+                         headers=headers,
+                         auth=auth,
+                         data=data,
+                         verify=False)
+        result = r.json()['results']
+        self.hosts = result
+        return result
+
+    def get_host_summary(self):
+        self.host_count = len(self.hosts)
+        for host in self.hosts:
+            print(host['attrs']['state'])
 
 
 username = 'root'
 password = '86f524b7c36862ed'
 hostname = 'icinga2'
 
+icinga = Icinga(username, password, hostname, port=5665)
+icinga.create_connection_data()
+icinga.get_host_summary()
 
-r = create_connection_data(hostname, username, password)
-
-
-if (r.status_code == 200):
-    pprint((r.json()['results']))
-else:
-    print(r.text)
-    r.raise_for_status()
+pprint(icinga.hosts)
