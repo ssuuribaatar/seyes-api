@@ -36,16 +36,4 @@ class Icinga:
 
     def get_host_summary(self):
         self.host_count = len(self.hosts)
-        for host in self.hosts:
-            print(host['attrs']['state'])
-
-
-username = 'root'
-password = '86f524b7c36862ed'
-hostname = 'icinga2'
-
-icinga = Icinga(username, password, hostname, port=5665)
-icinga.create_connection_data()
-icinga.get_host_summary()
-
-pprint(icinga.hosts)
+        return self.hosts

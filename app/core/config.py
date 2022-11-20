@@ -12,6 +12,11 @@ class Settings(BaseSettings):
     API_KEY: str = "sample_api_key"
     IS_DEBUG: bool = False
 
+    ICINGA_USERNAME = "root"
+    ICINGA_PASSWORD = "86f524b7c36862ed"
+    ICINGA_HOSTNAME = "192.168.8.196"
+    ICINGA_PORT = "5665"
+
     class Config:
         env_file = ".env"
         case_sensitive = True
